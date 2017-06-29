@@ -1,0 +1,23 @@
+Package: indeterminateR
+Type: Package
+Title: Evaluates the Existence and Uniqueness Properties of LRE Models
+Version: 0.1.0
+Author: Bernd Funovits
+Maintainer: Bernd Funovits <bernd.funovits@helsinki.fi>
+Description: Determines the existence and uniqueness properties of Rational 
+    Expectations models in Sims' canoncial form, depending on the deep structural
+    parameters of the model by Lubik and Marzo (2007). Written as support of the 
+    paper "The Full Set of Solutions of LRE Models" by the package author.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1
+Imports:
+  dplyr,
+  Matrix,
+  purrr,
+  QZ,
+  utils
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr
