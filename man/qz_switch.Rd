@@ -14,17 +14,21 @@ qz_switch(my_qz_list, i = 1, tol = sqrt(.Machine$double.eps))
 \item{tol}{Numeric tolerance level. Default set to square root of machine precision.}
 }
 \value{
-List object
+List object \code{qz_list} with elements
+  \itemize{
+    \item \strong{Lambda:} Upper-triangular matrix in Sims' notation.
+    \item \strong{Omega:} Upper-triangular matrix in Sims' notation.
+    \item \strong{Z:} Orthogonal matrix in Sims' notation.
+    \item \strong{Q:} Orthogonal matrix in Sims' notation.
+    \item \strong{gev_abs:} The absolute values of generalized eigenvalues.
+    \item \strong{ev_pairs:} The pairs of diagonal elements of \eqn{\Lambda} and \eqn{\Omega}.
+  }
 }
 \description{
 This function switches the diagonal elements of the upper-triangular matrices \eqn{\Lambda} and \eqn{\Omega} in the QZ-decomposition.
 It is a helper function for making the QZ-decomposition unique in the case where all generalized eigenvalues are different from each other.
 }
 \details{
-Sims' comment: (Note that the primes might be messed up!)
-Takes U.T. matrices a, b, orthonormal matrices q,z, interchanges diagonal elements i and i+1 of both a and b, while maintaining  qaz' and qbz' unchanged.
-If diagonal elements of a and b are zero at matching positions, the returned a will have zeros at both positions on the diagonal.
-This is natural behavior if this routine is used to drive all zeros on the diagonal of a to the lower right, but in this case the qz transformation is not unique and it is not possible simply to switch the positions of the diagonal elements of both a and b.
-
-See also https://doi.org/10.1007/978-94-015-8196-7_11
+Based on the code by Christopher A. Sims, retrieved on 18 June 2017 from \url{http://sims.princeton.edu/yftp/gensys/Rfiles/}.
+See also \href{https://doi.org/10.1007/978-94-015-8196-7_11}{Kagstrom (1993)}
 }

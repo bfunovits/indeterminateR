@@ -73,31 +73,101 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h4 class="date"><em><code>18 June 2017</code></em></h4>
 
 
+<div id="TOC">
+<ul>
+<li><a href="#description-of-the-new-keynesian-monetary-model">Description of the New Keynesian Monetary Model</a></li>
+<li><a href="#the-structure-of-the-package">The Structure of the Package</a></li>
+<li><a href="#verification-of-statements-in-the-paper">Verification of Statements in the Paper</a></li>
+</ul>
+</div>
 
-<p>This vignette analyzes a modified verison of the model by [Lubik and Marzo (2007)]{<a href="https://doi.org/10.1016/j.iref.2004.09.008" class="uri">https://doi.org/10.1016/j.iref.2004.09.008</a>}. In particular, it uses equation (26) with .</p>
-<p>The first section introduces the workings/functions of the package and can be skipped if one is only interested in verifying the results in the paper. The second section verifies that the uniqueness condition in [Sims (2001)]{<a href="https://doi.org/10.1023/A:1020517101123" class="uri">https://doi.org/10.1023/A:1020517101123</a>} is satisfied even though the existence condition has multiple solutions. The internal (indeterminate) characteristics are thus not identifiable from the external characteristics.</p>
-<div id="the-package" class="section level2">
-<h2>The Package</h2>
-<p>The main function is “evaluate_my_model”.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">?evaluate_my_model</code></pre></div>
-<pre><code>## Using development documentation for evaluate_my_model</code></pre>
-<p>Its inputs are * deep structural parameters, given as a list, and * a model, given as a string.</p>
-<p>In our case, we consider the model “Lubik_Marzo_26_0”. Its deep parameters can be inspected in its help-file.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">?linear_parameters_LM_26_0</code></pre></div>
-<pre><code>## Using development documentation for linear_parameters_LM_26_0</code></pre>
-<p>The outputs of “evaluate_my_model” are functions of the matrices in Sims’ canonical form. They are described in the help file of “evaluate_my_model” shown above.</p>
+<p>This vignette analyzes a modified verison of the model by <a href="https://doi.org/10.1016/j.iref.2004.09.008">Lubik and Marzo (2007)</a>. The first section introduces the economic in more detail. The second section explains the structure of the package. It can be skipped if one is only interested in verifying the results of the paper. The last section verifies that for some parameter values in this model, the uniqueness condition in <a href="https://doi.org/10.1023/A:1020517101123">Sims (2001)</a> is satisfied even though the existence condition has multiple solutions. The internal indeterminate characteristics are thus not identifiable from the external characteristics.</p>
+<div id="description-of-the-new-keynesian-monetary-model" class="section level2">
+<h2>Description of the New Keynesian Monetary Model</h2>
+<p>The model we consider corresponds to the monetary rule described in Lubik and Marzo’s equation (26) with <span class="math inline">\(i = 0\)</span>:</p>
+<p><span class="math display">\[
+\begin{align*}
+    \mathbb{E}_{t} \left( y_{t+1} \right) + \sigma \pi_{t} &amp; = y_{t} + \sigma R_{t} \\
+    \beta \mathbb{E}_{t} \left( \pi_{t+1} \right) &amp; = \pi_{t} - \kappa y_{t}\\
+    R_{t} &amp; = \phi_{R} R_{t-1} + \phi_{\pi} \pi_{t} + \phi_{y} y_{t} + \varepsilon_t^R
+\end{align*}
+\]</span></p>
+<p>Replacing the conditional expectations with new variables <span class="math inline">\(\mathbb{E}_{t} \left( y_{t+1} \right) = \xi^{y}_t\)</span> and <span class="math inline">\(\mathbb{E}_{t} \left( \pi_{t+1} \right) = \xi^{\pi}_t\)</span>, adding equations</p>
+<p><span class="math display">\[
+\begin{align*}
+  y_{t} &amp; = \xi^{y}_{t-1} + \eta^{y}_t\\
+  \pi_{t} &amp; = \xi^{\pi}_{t-1} + \eta^{\pi}_t
+\end{align*}
+\]</span></p>
+<p>and replacing <span class="math inline">\(y_t\)</span> and <span class="math inline">\(\pi_t\)</span> in the three equation New Keynesian monetary model, leads to the following system in the canoncial form of <a href="https://doi.org/10.1023/A:1020517101123">Sims (2001)</a></p>
+<p><span class="math display">\[
+\begin{pmatrix}
+    1 &amp; 0 &amp; -\sigma\\
+    0 &amp; \beta &amp; 0\\
+    0 &amp; 0 &amp; 1
+\end{pmatrix}
+\begin{pmatrix}
+    \xi_{t}^{y}\\
+    \xi_{t}^{\pi}\\
+    R_{t}
+\end{pmatrix} =
+\begin{pmatrix}
+    1 &amp; 0 &amp; 0\\
+    -\kappa &amp; 1 &amp; 0\\
+    0 &amp; 0 &amp; \phi_{R}
+\end{pmatrix}
+\begin{pmatrix}
+    \xi_{t-1}^{y}\\
+    \xi_{t-1}^{\pi}\\
+    R_{t-1}
+\end{pmatrix} + 
+\begin{pmatrix}
+    0\\
+    0\\
+    1
+\end{pmatrix} 
+\varepsilon_{t}^{R} + 
+\begin{pmatrix}
+    1 &amp; -\sigma\\
+    -\kappa &amp; 1\\
+    \phi_{y} &amp; \phi_{\pi}
+\end{pmatrix}
+\begin{pmatrix}
+    \eta_{t}^{y}\\
+    \eta_{t}^{\pi}
+\end{pmatrix}
+\]</span> where the matrices correspond to <span class="math display">\[ \left( \Gamma_0, \Gamma_1, \Psi, \Pi \right) \]</span> in Sims’ notation.</p>
+</div>
+<div id="the-structure-of-the-package" class="section level2">
+<h2>The Structure of the Package</h2>
+<p>The main function is <code>evaluate_my_model()</code>. Its inputs are</p>
+<ul>
+<li>deep structural parameters, given as a list, and</li>
+<li>a model, given as a string.</li>
+</ul>
+<p>First, it calls the function <code>linear_parameters_LM_26_0()</code> which uses the deep structural parameters to generate the matrices in Sims’ canonical form. Subsequently, some parts of Sims’ gensys program are called to obtain the ordered QZ decomposition. Last, the the existence and uniqueness condition are evaluated.</p>
+<p>All functions are well documented and can be found with the command <code>help(package = &quot;indeterminateR&quot;)</code>. In particular, a description of the parameter of the model described above can be found in the help file of <code>?linear_parameters_LM_26_0</code>.</p>
+<p>The outputs of <code>evaluate_my_model()</code> are functions of the matrices in Sims’ canonical form and are described in the help file which can be accessed with the command <code>?evaluate_my_model</code>.</p>
 </div>
 <div id="verification-of-statements-in-the-paper" class="section level2">
 <h2>Verification of Statements in the Paper</h2>
-<p>The input parameter “verbose” in “evaluate_my_model” is set to “TRUE”. In this way, the functions prints * the linear parameter in Sims’ canonical form, * the orthogonal matrices describing the stable and unstable subspaces, * the generalized eigenvalues in the QZ decomposition, and * the matrices used in the existence and uniqueness condition.</p>
-<p>Finally, the results for existence and uniqueness are given. The boolean values for the existence and uniqueness condition indicate that both are satisfied. Even though the dimension of the kernel in the existence condition is one, the dimension of indeterminacy is zero.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">results &lt;-<span class="st"> </span><span class="kw">evaluate_my_model</span>(<span class="dt">deep_params =</span> <span class="kw">list</span>(<span class="dt">s =</span> <span class="fl">1.5</span>, 
-                                     <span class="dt">b =</span> <span class="fl">0.99</span>, 
-                                     <span class="dt">k =</span> <span class="dv">1</span>/<span class="fl">1.5</span>, 
-                                     <span class="dt">f_y =</span> -<span class="fl">1.3</span>/<span class="fl">1.5</span>, 
-                                     <span class="dt">f_p =</span> <span class="fl">1.3</span>, 
-                                     <span class="dt">f_r =</span> <span class="fl">0.6</span>), 
-                  <span class="dt">my_model =</span> <span class="st">&quot;Lubik_Marzo_26_0&quot;</span>, <span class="dt">verbose =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<p>Here, we verify that, as stated in the paper, for the parameters <span class="math inline">\(\kappa = \frac{1}{\sigma}\)</span> and <span class="math inline">\(\phi_{y} = -\phi_{\pi} \kappa\)</span> and, e.g., <span class="math inline">\(\beta = 0.95\)</span> and <span class="math inline">\(\phi_R = 0.6\)</span>, the existence condition has a non-trivial kernel but the uniqueness condition is satisfied. According to <a href="https://doi.org/10.1016/S0165-1889(02)00153-7">Lubik and Schorfheide (2003)</a>, this would correspond to an (internally) indeterminate equilibrium.</p>
+<p>The functions prints <code>evaluate_my_model</code> prints</p>
+<ul>
+<li>the linear parameters <span class="math display">\[ \left( \Gamma_0, \Gamma_1, \Psi, \Pi \right) \]</span> in Sims’ canonical form,</li>
+<li>the orthogonal matrix <span class="math inline">\(Q\)</span> whose rows describe the stable and unstable subspaces,</li>
+<li>the generalized eigenvalues in the QZ decomposition, and</li>
+<li>the matrices <span class="math display">\[ Q_{U \bullet} \Psi, Q_{S \bullet} \Pi, Q_{U \bullet} \Pi \]</span> used in the existence and uniqueness condition.</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">results &lt;-<span class="st"> </span><span class="kw">evaluate_my_model</span>(<span class="dt">deep_params =</span> 
+                               <span class="kw">list</span>(<span class="dt">s =</span> <span class="fl">1.5</span>, 
+                                    <span class="dt">b =</span> <span class="fl">0.99</span>, 
+                                    <span class="dt">k =</span> <span class="dv">1</span>/<span class="fl">1.5</span>, 
+                                    <span class="dt">f_y =</span> -<span class="fl">1.3</span>/<span class="fl">1.5</span>, 
+                                    <span class="dt">f_p =</span> <span class="fl">1.3</span>, 
+                                    <span class="dt">f_r =</span> <span class="fl">0.6</span>),
+                             <span class="dt">my_model =</span> <span class="st">&quot;Lubik_Marzo_26_0&quot;</span>, 
+                             <span class="dt">verbose =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <pre><code>## Matrices in Sims' canonical form: 
 ## $Gamma_0
 ##      [,1] [,2] [,3]
@@ -148,6 +218,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 ##            [,1]       [,2]
 ## [1,]  0.4673813 -0.7010719
 ## [2,] -1.4049838  2.1074757</code></pre>
+<p>Finally, the results for existence and uniqueness are given. The boolean values for the existence and uniqueness condition indicate that both are satisfied. Even though the dimension of the kernel in the existence condition is one, the dimension of indeterminacy is zero.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">t</span>(results)</code></pre></div>
 <pre><code>##                                   [,1]
 ## existence_boolean         1.000000e+00
@@ -155,6 +226,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 ## uniqueness_boolean        1.000000e+00
 ## indeterminacy_dim         0.000000e+00
 ## indeterminacy_smallest_sv 8.326673e-16</code></pre>
+<p>The boolean values for existence and uniqueness indicate that a solution exist and that it is unique. The dimension of the kernel of the existence condition is one. Therefore, Lubik and Schorfheide would characterize this system as indeterminate. The dimension of indeterminacy, however, is zero. The last entry corresponds to the smallest singular value of the intersection of the spaces spanned by <span class="math inline">\(\tilde{V}_{1 \bullet}\)</span> and <span class="math inline">\(V_{2 \bullet}\)</span>, i.e. the smallest singular value of <span class="math display">\[
+\tilde{V}'_{\bullet1}V_{\bullet2}
+\]</span> as described in the paper.</p>
 </div>
 
 

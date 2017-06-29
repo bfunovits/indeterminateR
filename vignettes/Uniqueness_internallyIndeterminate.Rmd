@@ -1,0 +1,148 @@
+---
+title: "Unique External Characteristics with Non-Unique Internal Characteristics"
+author: "Bernd Funovits"
+date: '`18 June 2017`'
+output:
+  rmarkdown::html_vignette:
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Uniqueness et al.}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(indeterminateR)
+library(tidyverse)
+```
+
+This vignette analyzes a modified verison of the model by [Lubik and Marzo (2007)](https://doi.org/10.1016/j.iref.2004.09.008). 
+The first section introduces the economic in more detail.
+The second section explains the structure of the package.
+It can be skipped if one is only interested in verifying the results of the paper.
+The last section verifies that for some parameter values in this model, the uniqueness condition in [Sims (2001)](https://doi.org/10.1023/A:1020517101123) is satisfied even though the existence condition has multiple solutions.
+The internal indeterminate characteristics are thus not identifiable from the external characteristics.
+
+## Description of the New Keynesian Monetary Model
+
+The model we consider corresponds to the monetary rule described in Lubik and Marzo's equation (26) with $i = 0$:
+
+$$
+\begin{align*}
+    \mathbb{E}_{t} \left( y_{t+1} \right) + \sigma \pi_{t} & = y_{t} + \sigma R_{t} \\
+    \beta \mathbb{E}_{t} \left( \pi_{t+1} \right) & = \pi_{t} - \kappa y_{t}\\
+    R_{t} & = \phi_{R} R_{t-1} + \phi_{\pi} \pi_{t} + \phi_{y} y_{t} + \varepsilon_t^R
+\end{align*}
+$$
+
+Replacing the conditional expectations with new variables $\mathbb{E}_{t} \left( y_{t+1} \right) = \xi^{y}_t$ and $\mathbb{E}_{t} \left( \pi_{t+1} \right) = \xi^{\pi}_t$, adding equations 
+
+$$
+\begin{align*}
+  y_{t} & = \xi^{y}_{t-1} + \eta^{y}_t\\
+  \pi_{t} & = \xi^{\pi}_{t-1} + \eta^{\pi}_t
+\end{align*}
+$$
+
+and replacing $y_t$ and $\pi_t$ in the three equation New Keynesian monetary model, leads to the following system in the canoncial form of [Sims (2001)](https://doi.org/10.1023/A:1020517101123)
+
+$$
+\begin{pmatrix}
+    1 & 0 & -\sigma\\
+    0 & \beta & 0\\
+    0 & 0 & 1
+\end{pmatrix}
+\begin{pmatrix}
+    \xi_{t}^{y}\\
+    \xi_{t}^{\pi}\\
+    R_{t}
+\end{pmatrix} =
+\begin{pmatrix}
+    1 & 0 & 0\\
+    -\kappa & 1 & 0\\
+    0 & 0 & \phi_{R}
+\end{pmatrix}
+\begin{pmatrix}
+    \xi_{t-1}^{y}\\
+    \xi_{t-1}^{\pi}\\
+    R_{t-1}
+\end{pmatrix} + 
+\begin{pmatrix}
+    0\\
+    0\\
+    1
+\end{pmatrix} 
+\varepsilon_{t}^{R} + 
+\begin{pmatrix}
+    1 & -\sigma\\
+    -\kappa & 1\\
+    \phi_{y} & \phi_{\pi}
+\end{pmatrix}
+\begin{pmatrix}
+    \eta_{t}^{y}\\
+    \eta_{t}^{\pi}
+\end{pmatrix}
+$$
+where the matrices correspond to $$ \left( \Gamma_0, \Gamma_1, \Psi, \Pi \right) $$ in Sims' notation.
+
+## The Structure of the Package
+
+The main function is `evaluate_my_model()`.
+Its inputs are 
+
+* deep structural parameters, given as a list, and 
+* a model, given as a string.
+
+First, it calls the function `linear_parameters_LM_26_0()` which uses the deep structural parameters to generate the matrices in Sims' canonical form.
+Subsequently, some parts of Sims' gensys program are called to obtain the ordered QZ decomposition.
+Last, the the existence and uniqueness condition are evaluated.
+
+All functions are well documented and can be found with the command `help(package = "indeterminateR")`.
+In particular, a description of the parameter of the model described above can be found in the help file of `?linear_parameters_LM_26_0`.
+
+The outputs of `evaluate_my_model()` are functions of the matrices in Sims' canonical form and are described in the help file which can be accessed with the command `?evaluate_my_model`.
+
+## Verification of the Statements in the Paper
+
+Here, we verify that, as stated in the paper, for the parameters $\kappa = \frac{1}{\sigma}$ and $\phi_{y} = -\phi_{\pi} \kappa$ and, e.g., $\beta = 0.95$ and $\phi_R = 0.6$, the existence condition has a non-trivial kernel but the uniqueness condition is satisfied. 
+According to [Lubik and Schorfheide (2003)](https://doi.org/10.1016/S0165-1889\(02\)00153-7), this would correspond to an (internally) indeterminate equilibrium.
+
+The functions prints `evaluate_my_model` prints
+
+* the linear parameters $$ \left( \Gamma_0, \Gamma_1, \Psi, \Pi \right) $$ in Sims' canonical form,
+* the orthogonal matrix $Q$ whose rows describe the stable and unstable subspaces,
+* the generalized eigenvalues in the QZ decomposition, and
+* the matrices $$ Q_{U \bullet} \Psi, Q_{S \bullet} \Pi, Q_{U \bullet} \Pi $$ used in the existence and uniqueness condition.
+
+
+```{r Run the example}
+results <- evaluate_my_model(deep_params = 
+                               list(s = 1.5, 
+                                    b = 0.99, 
+                                    k = 1/1.5, 
+                                    f_y = -1.3/1.5, 
+                                    f_p = 1.3, 
+                                    f_r = 0.6),
+                             my_model = "Lubik_Marzo_26_0", 
+                             verbose = TRUE)
+```
+
+Finally, the results for existence and uniqueness are given.
+The boolean values for the existence and uniqueness condition indicate that both are satisfied.
+Even though the dimension of the kernel in the existence condition is one, the dimension of indeterminacy is zero.
+
+
+```{r}
+t(results)
+```
+
+The boolean values for existence and uniqueness indicate that a solution exist and that it is unique.
+The dimension of the kernel of the existence condition is one.
+Therefore, Lubik and Schorfheide would characterize this system as indeterminate.
+The dimension of indeterminacy, however, is zero.
+The last entry corresponds to the smallest singular value of the intersection of the spaces spanned by $\tilde{V}_{1 \bullet}$ and $V_{2 \bullet}$, i.e. the smallest singular value of 
+$$
+\tilde{V}'_{\bullet1}V_{\bullet2}
+$$
+as described in the paper.

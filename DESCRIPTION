@@ -18,6 +18,8 @@ Imports:
   purrr,
   QZ,
   utils
-Suggests: knitr,
-    rmarkdown
+Suggests: 
+  knitr,
+  rmarkdown,
+  tidyverse
 VignetteBuilder: knitr

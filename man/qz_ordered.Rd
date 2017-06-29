@@ -17,20 +17,29 @@ qz_ordered(threshold = 1.01, my_Gamma_0, my_Gamma_1,
 \item{tol}{Numeric tolerance level. Default value set to the square root of machine precision.}
 }
 \value{
-List object of the same form as the output of
+List object containing
+  \itemize{
+    \item \strong{Q_unstable:} The rows of the orthogonal matrix \code{Q} pertaining to the unstable generalized eigenvalues.
+    \item \strong{Q_stable:} Same for stable generalized eigenvalues.
+    \item \strong{generalized_ev:} The generalized eigenvalues.
+  }
 }
 \description{
 Uses the \link[QZ]{qz} decomposition of \eqn{\Gamma_0 , \Gamma_1} from Sims' canoncial form to decouple into a stable and an unstable part.
-It rearranges them so that all cases of \deqn{ \frac{\Omega_{i,i}}{\Lambda_{i,i}} > stake} are in the bottom right corner.
-It ensures that the product \code{t(Q} \eqn{\Lambda} \code{t(Z)} and \code{t(Q)} \eqn{\Omega} \code{t(Z)} remains the same
+The function arranges the equations such that all generalized eigenvalues in the QZ-decomposition which are larger than the given \code{threshold} are in the bottom right block.
+To be more precise, the ratios of the diagonal elements of the upper-triangular matrices in the QZ-decomposition for which
+\deqn{ \Omega_{i,i} / \Lambda_{i,i} > threshold }
+holds, are in the bottom right corner.
+The functions ensures that the products \code{t(Q)*} \eqn{\Lambda} \code{*t(Z)} and \code{t(Q)*} \eqn{  \Omega } \code{*t(Z)} remains unchanged.
 }
 \details{
-Note that the function \link[QZ]{qz} returns the QZ decomposition such that
-\deqn{( \Gamma_0, \Gamma_1 ) = ( VSL  S  Conj(t(VSR)), VSL * T * Conj(t(VSR)) )}
-while in Sims' notation (page 9, formula (32) in \href{Sims (2001)}{https://doi.org/10.1023/A:1020517101123}) the QZ decomposition corresponds to
-\deqn{( \Gamma_0, \Gamma_1 ) = ( Conj(t(Q)) \Lambda Conj(t(Z)) , Conj(t(Q)) \Omega Conj(t(Z)) )}.
+Note that the function \link[QZ]{qz} returns the QZ-decomposition such that
+\deqn{( \Gamma_0, \Gamma_1 ) = ( VSL *  S  * Conj(t(VSR)), VSL * T * Conj(t(VSR)) ),}
+where \code{VSL} and \code{VSR} are Hermitian matrices, and \code{S} and \code{T} are upper triangular matrices (output of Fortran routines).
+However, the QZ-decomposition corresponds in Sims' notation ( see page 9, formula (32) in \href{https://doi.org/10.1023/A:1020517101123}{Sims (2001)} ) to
+\deqn{( \Gamma_0, \Gamma_1 ) = ( Conj(t(Q)) * \Lambda * Conj(t(Z)) , Conj(t(Q)) * \Omega * Conj(t(Z)) ).}
 The code is intended to keep the notation close to Sims (2001) and adjusts the outputs of the \link[QZ]{qz} function accordingly.
 
-Some parts of this function are based on R code by Sims (22 Feb 2004) which in turn is based on earlier matlab code (finished 27 Apr 2000).
+Some parts of this function are based on R code by Christopher A. Sims (22 Feb 2004) which in turn is based on earlier matlab code (finished 27 Apr 2000).
 Retrieved on 14 June 2017 from \url{http://sims.princeton.edu/yftp/gensys/Rfiles/}.
 }

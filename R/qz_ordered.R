@@ -1,16 +1,20 @@
 #' Decoupling into Stable and Unstable Systems
 #'
 #' Uses the \link[QZ]{qz} decomposition of \eqn{\Gamma_0 , \Gamma_1} from Sims' canoncial form to decouple into a stable and an unstable part.
-#' It rearranges them so that all cases of \deqn{ \frac{\Omega_{i,i}}{\Lambda_{i,i}} > stake} are in the bottom right corner.
-#' It ensures that the product \code{t(Q} \eqn{\Lambda} \code{t(Z)} and \code{t(Q)} \eqn{\Omega} \code{t(Z)} remains the same
+#' The function arranges the equations such that all generalized eigenvalues in the QZ-decomposition which are larger than the given \code{threshold} are in the bottom right block.
+#' To be more precise, the ratios of the diagonal elements of the upper-triangular matrices in the QZ-decomposition for which
+#' \deqn{ \Omega_{i,i} / \Lambda_{i,i} > threshold }
+#' holds, are in the bottom right corner.
+#' The functions ensures that the products \code{t(Q)*} \eqn{\Lambda} \code{*t(Z)} and \code{t(Q)*} \eqn{  \Omega } \code{*t(Z)} remains unchanged.
 #'
-#' Note that the function \link[QZ]{qz} returns the QZ decomposition such that
-#' \deqn{( \Gamma_0, \Gamma_1 ) = ( VSL  S  Conj(t(VSR)), VSL * T * Conj(t(VSR)) )}
-#' while in Sims' notation (page 9, formula (32) in \href{Sims (2001)}{https://doi.org/10.1023/A:1020517101123}) the QZ decomposition corresponds to
-#' \deqn{( \Gamma_0, \Gamma_1 ) = ( Conj(t(Q)) \Lambda Conj(t(Z)) , Conj(t(Q)) \Omega Conj(t(Z)) )}.
+#' Note that the function \link[QZ]{qz} returns the QZ-decomposition such that
+#' \deqn{( \Gamma_0, \Gamma_1 ) = ( VSL *  S  * Conj(t(VSR)), VSL * T * Conj(t(VSR)) ),}
+#' where \code{VSL} and \code{VSR} are Hermitian matrices, and \code{S} and \code{T} are upper triangular matrices (output of Fortran routines).
+#' However, the QZ-decomposition corresponds in Sims' notation ( see page 9, formula (32) in \href{https://doi.org/10.1023/A:1020517101123}{Sims (2001)} ) to
+#' \deqn{( \Gamma_0, \Gamma_1 ) = ( Conj(t(Q)) * \Lambda * Conj(t(Z)) , Conj(t(Q)) * \Omega * Conj(t(Z)) ).}
 #' The code is intended to keep the notation close to Sims (2001) and adjusts the outputs of the \link[QZ]{qz} function accordingly.
 #'
-#' Some parts of this function are based on R code by Sims (22 Feb 2004) which in turn is based on earlier matlab code (finished 27 Apr 2000).
+#' Some parts of this function are based on R code by Christopher A. Sims (22 Feb 2004) which in turn is based on earlier matlab code (finished 27 Apr 2000).
 #' Retrieved on 14 June 2017 from \url{http://sims.princeton.edu/yftp/gensys/Rfiles/}.
 #'
 #' @param threshold Threshold to define when a generalized eigenvalue is considered as unstable
@@ -18,11 +22,19 @@
 #' @param my_Gamma_1 Matrix from Sims' canonical form
 #' @param tol Numeric tolerance level. Default value set to the square root of machine precision.
 #'
-#' @return List object of the same form as the output of
+#' @return List object containing
+#'   \itemize{
+#'     \item \strong{Q_unstable:} The rows of the orthogonal matrix \code{Q} pertaining to the unstable generalized eigenvalues.
+#'     \item \strong{Q_stable:} Same for stable generalized eigenvalues.
+#'     \item \strong{generalized_ev:} The generalized eigenvalues.
+#'   }
 #' @importFrom purrr %>%
 #' @export
 
-qz_ordered <- function (threshold = 1.01, my_Gamma_0, my_Gamma_1, tol = sqrt(.Machine$double.eps)) {
+qz_ordered <- function (threshold = 1.01,
+                        my_Gamma_0,
+                        my_Gamma_1,
+                        tol = sqrt(.Machine$double.eps)) {
   # Apply the QZ decomposition and save the output
   # The list objects are such that (Gamma_0, \Gamma_1) = ( VSL %*% S %*% Conj(t(VSR)), VSL %*% T %*% Conj(t(VSR)) )
   # More info under http://www.netlib.org/lapack/complex16/zgges.f
@@ -110,18 +122,22 @@ qz_ordered <- function (threshold = 1.01, my_Gamma_0, my_Gamma_1, tol = sqrt(.Ma
 #' This function switches the diagonal elements of the upper-triangular matrices \eqn{\Lambda} and \eqn{\Omega} in the QZ-decomposition.
 #' It is a helper function for making the QZ-decomposition unique in the case where all generalized eigenvalues are different from each other.
 #'
-#' Sims' comment: (Note that the primes might be messed up!)
-#' Takes U.T. matrices a, b, orthonormal matrices q,z, interchanges diagonal elements i and i+1 of both a and b, while maintaining  qaz' and qbz' unchanged.
-#' If diagonal elements of a and b are zero at matching positions, the returned a will have zeros at both positions on the diagonal.
-#' This is natural behavior if this routine is used to drive all zeros on the diagonal of a to the lower right, but in this case the qz transformation is not unique and it is not possible simply to switch the positions of the diagonal elements of both a and b.
-#'
-#' See also https://doi.org/10.1007/978-94-015-8196-7_11
+#' Based on the code by Christopher A. Sims, retrieved on 18 June 2017 from \url{http://sims.princeton.edu/yftp/gensys/Rfiles/}.
+#' See also \href{https://doi.org/10.1007/978-94-015-8196-7_11}{Kagstrom (1993)}
 #'
 #' @param i Index of the diagonal element to be switched with the following one, i.e. \code{i+1}
 #' @param my_qz_list List object containing the orthogonal and upper-triangular matrices returned by the QZ-decomposition in R.
 #' @param tol Numeric tolerance level. Default set to square root of machine precision.
 #'
-#' @return List object
+#' @return List object \code{qz_list} with elements
+#'   \itemize{
+#'     \item \strong{Lambda:} Upper-triangular matrix in Sims' notation.
+#'     \item \strong{Omega:} Upper-triangular matrix in Sims' notation.
+#'     \item \strong{Z:} Orthogonal matrix in Sims' notation.
+#'     \item \strong{Q:} Orthogonal matrix in Sims' notation.
+#'     \item \strong{gev_abs:} The absolute values of generalized eigenvalues.
+#'     \item \strong{ev_pairs:} The pairs of diagonal elements of \eqn{\Lambda} and \eqn{\Omega}.
+#'   }
 #' @importFrom purrr %>%
 #' @export
 
