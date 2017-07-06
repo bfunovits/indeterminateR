@@ -3,46 +3,62 @@ title: "Unique External Characteristics with Non-Unique Internal Characteristics
 author: "Bernd Funovits"
 date: '`18 June 2017`'
 output:
+  pdf_document: default
   rmarkdown::html_vignette:
-    toc: true
-vignette: >
-  %\VignetteIndexEntry{Uniqueness et al.}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+    toc: yes
+vignette: |
+  %\VignetteIndexEntry{Uniqueness et al.} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(indeterminateR)
 library(tidyverse)
+library(printr)
 ```
 
-This vignette analyzes a modified verison of the model by [Lubik and Marzo (2007)](https://doi.org/10.1016/j.iref.2004.09.008). 
+This vignette analyses a verison of the New Keynesian monetary model.
 The first section introduces the economic in more detail.
-The second section explains the structure of the package.
-It can be skipped if one is only interested in verifying the results of the paper.
-The last section verifies that for some parameter values in this model, the uniqueness condition in [Sims (2001)](https://doi.org/10.1023/A:1020517101123) is satisfied even though the existence condition has multiple solutions.
+The second section verifies that for the parameter values indicated in the associated paper, the uniqueness condition in [Sims (2001)](https://doi.org/10.1023/A:1020517101123) is satisfied even though the existence condition has multiple solutions.
 The internal indeterminate characteristics are thus not identifiable from the external characteristics.
+The last section explains the structure of the package.
 
 ## Description of the New Keynesian Monetary Model
 
-The model we consider corresponds to the monetary rule described in Lubik and Marzo's equation (26) with $i = 0$:
+We consider the model
 
 $$
-\begin{align*}
+\begin{array}{rl}
     \mathbb{E}_{t} \left( y_{t+1} \right) + \sigma \pi_{t} & = y_{t} + \sigma R_{t} \\
     \beta \mathbb{E}_{t} \left( \pi_{t+1} \right) & = \pi_{t} - \kappa y_{t}\\
-    R_{t} & = \phi_{R} R_{t-1} + \phi_{\pi} \pi_{t} + \phi_{y} y_{t} + \varepsilon_t^R
-\end{align*}
+    R_{t} & = \phi_{R} R_{t-1} + \phi_{\pi} \pi_{t} + \phi_{y} y_{t} + \varepsilon_{t}^{R}
+\end{array}
 $$
+
+where $y_t$, $\pi_t$, and $R_t$ are log-deviations from the steady state of output, inflation and the interest rate. 
+Furthermore, $\sigma$ denotes the intertemporal substitution elasticity, $\beta$ the time preference rate, $\kappa^{-1}$ measures the elasticity of aggregate supply with respect to inflation, $\phi_R$ denotes the interest rate smoothing coefficient, $\phi_{\pi}$ denotes the elasticity of the interest rate response with respect to inflation, and $\phi_{y}$ denotes the elasticity of the interest rate response with respect to output. 
+Finally, $\varepsilon_t^{R}$ denotes an unanticipated policy implementation shock.
+
+The second equation is identical to equation (2) in [Lubik and Schorfheide (2003)](https://doi.org/10.1016/S0165-1889(02)00153-7).
+It describes the inflation dynamics due to firms' optimal price-setting.
+The first equation corresponds to an intertemporal Euler equation. 
+Compared with equation (1) in [Lubik and Schorfheide (2003)](https://doi.org/10.1016/S0165-1889(02)00153-7), i.e. 
+
+$$
+\mathbb{E}_{t} \left( y_{t+1} \right) + \sigma \mathbb{E}_{t} \left( \pi_{t} \right) = y_{t} + \sigma R_{t},
+$$
+we replace $\mathbb{E}_{t} \left( \pi_{t} \right)$ with $\pi_t$.
+The third equation corresponds to equation (26) for $i = 0$ in [Lubik and Marzo (2007)](https://doi.org/10.1016/j.iref.2004.09.008) and includes an additional shock $\varepsilon_t^{R}$.
+
+### Solving the model by replacing the conditional expectations
 
 Replacing the conditional expectations with new variables $\mathbb{E}_{t} \left( y_{t+1} \right) = \xi^{y}_t$ and $\mathbb{E}_{t} \left( \pi_{t+1} \right) = \xi^{\pi}_t$, adding equations 
 
 $$
-\begin{align*}
+\begin{array}{rl}
   y_{t} & = \xi^{y}_{t-1} + \eta^{y}_t\\
   \pi_{t} & = \xi^{\pi}_{t-1} + \eta^{\pi}_t
-\end{align*}
+\end{array}
 $$
 
 and replacing $y_t$ and $\pi_t$ in the three equation New Keynesian monetary model, leads to the following system in the canoncial form of [Sims (2001)](https://doi.org/10.1023/A:1020517101123)
@@ -86,26 +102,9 @@ $$
 $$
 where the matrices correspond to $$ \left( \Gamma_0, \Gamma_1, \Psi, \Pi \right) $$ in Sims' notation.
 
-## The Structure of the Package
-
-The main function is `evaluate_my_model()`.
-Its inputs are 
-
-* deep structural parameters, given as a list, and 
-* a model, given as a string.
-
-First, it calls the function `linear_parameters_LM_26_0()` which uses the deep structural parameters to generate the matrices in Sims' canonical form.
-Subsequently, some parts of Sims' gensys program are called to obtain the ordered QZ decomposition.
-Last, the the existence and uniqueness condition are evaluated.
-
-All functions are well documented and can be found with the command `help(package = "indeterminateR")`.
-In particular, a description of the parameter of the model described above can be found in the help file of `?linear_parameters_LM_26_0`.
-
-The outputs of `evaluate_my_model()` are functions of the matrices in Sims' canonical form and are described in the help file which can be accessed with the command `?evaluate_my_model`.
-
 ## Verification of the Statements in the Paper
 
-Here, we verify that, as stated in the paper, for the parameters $\kappa = \frac{1}{\sigma}$ and $\phi_{y} = -\phi_{\pi} \kappa$ and, e.g., $\beta = 0.95$ and $\phi_R = 0.6$, the existence condition has a non-trivial kernel but the uniqueness condition is satisfied. 
+Here, we verify that, as stated in the associated paper, for the parameters $\kappa = \frac{1}{\sigma}$ and $\phi_{y} = -\phi_{\pi} \kappa$ and, e.g., $\beta = 0.95$ and $\phi_R = 0.6$, the existence condition has a non-trivial kernel but the uniqueness condition is satisfied. 
 According to [Lubik and Schorfheide (2003)](https://doi.org/10.1016/S0165-1889\(02\)00153-7), this would correspond to an (internally) indeterminate equilibrium.
 
 The functions prints `evaluate_my_model` prints
@@ -133,8 +132,8 @@ The boolean values for the existence and uniqueness condition indicate that both
 Even though the dimension of the kernel in the existence condition is one, the dimension of indeterminacy is zero.
 
 
-```{r}
-t(results)
+```{r Results}
+as.list(results)
 ```
 
 The boolean values for existence and uniqueness indicate that a solution exist and that it is unique.
@@ -146,3 +145,30 @@ $$
 \tilde{V}'_{\bullet1}V_{\bullet2}
 $$
 as described in the paper.
+
+## The Structure of the Package
+
+The main function is `evaluate_my_model()`.
+Its inputs are 
+
+* deep structural parameters, given as a list, and 
+* a model, given as a string.
+
+First, it calls the function `linear_parameters_LM_26_0()` which uses the deep structural parameters to generate the matrices in Sims' canonical form.
+Subsequently, some parts of Sims' gensys programme are called to obtain the ordered QZ decomposition.
+Last, the the existence and uniqueness condition are evaluated.
+
+All functions are well documented and can be found with the command `help(package = "indeterminateR")`.
+In particular, a description of the parameter of the model described above can be found in the help file of `linear_parameters_LM_26_0()`.
+Moreover, the outputs of `evaluate_my_model()` are functions of the matrices in Sims' canonical form and are described in the help file of `evaluate_my_model`.
+
+### Help files
+
+```{r Help-file for Lubik and Marzo (2007)}
+?linear_parameters_LM_26_0
+```
+
+
+```{r Help-file for evaluate_my_model}
+?evaluate_my_model
+```

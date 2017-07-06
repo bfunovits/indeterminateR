@@ -30,7 +30,7 @@ Object of type "data_frame". Contains information about the existence and unique
   In particular, the variables are
   \itemize{
     \item \strong{existence_boolean:} TRUE if a stable and causal solution exists
-    \item \strong{existence_dim_kernel:} Dimension of the kernel of the matrix pertaining to the endogenous forecast errors in the existence cóndition.
+    \item \strong{existence_dim_kernel:} Dimension of the kernel of the matrix pertaining to the endogenous forecast errors in the existence condition.
     \item \strong{uniqueness_boolean:} TRUE if the uniqueness condition is satisfied
     \item \strong{indeterminacy_dim:} Dimension of indeterminacy as characterized in the paper accompanying this package
     \item \strong{indeterminacy_smallest_sv:} Smallest singular value of the intersection of the spaces in the uniqueness condition. The smaller, the "more unique".

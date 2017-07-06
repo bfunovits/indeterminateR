@@ -2,6 +2,7 @@
 knitr::opts_chunk$set(echo = TRUE)
 library(indeterminateR)
 library(tidyverse)
+library(printr)
 
 ## ----Run the example-----------------------------------------------------
 results <- evaluate_my_model(deep_params = 
@@ -14,6 +15,12 @@ results <- evaluate_my_model(deep_params =
                              my_model = "Lubik_Marzo_26_0", 
                              verbose = TRUE)
 
-## ------------------------------------------------------------------------
+## ----Results-------------------------------------------------------------
 t(results)
+
+## ----Help-file for Lubik and Marzo (2007)--------------------------------
+?linear_parameters_LM_26_0
+
+## ----Help-file for evaluate_my_model-------------------------------------
+?evaluate_my_model
 

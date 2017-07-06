@@ -75,29 +75,40 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 <div id="TOC">
 <ul>
-<li><a href="#description-of-the-new-keynesian-monetary-model">Description of the New Keynesian Monetary Model</a></li>
-<li><a href="#the-structure-of-the-package">The Structure of the Package</a></li>
-<li><a href="#verification-of-statements-in-the-paper">Verification of Statements in the Paper</a></li>
+<li><a href="#description-of-the-new-keynesian-monetary-model">Description of the New Keynesian Monetary Model</a><ul>
+<li><a href="#solving-the-model-by-replacing-the-conditional-expectations">Solving the model by replacing the conditional expectations</a></li>
+</ul></li>
+<li><a href="#verification-of-the-statements-in-the-paper">Verification of the Statements in the Paper</a></li>
+<li><a href="#the-structure-of-the-package">The Structure of the Package</a><ul>
+<li><a href="#help-files">Help files</a></li>
+</ul></li>
 </ul>
 </div>
 
-<p>This vignette analyzes a modified verison of the model by <a href="https://doi.org/10.1016/j.iref.2004.09.008">Lubik and Marzo (2007)</a>. The first section introduces the economic in more detail. The second section explains the structure of the package. It can be skipped if one is only interested in verifying the results of the paper. The last section verifies that for some parameter values in this model, the uniqueness condition in <a href="https://doi.org/10.1023/A:1020517101123">Sims (2001)</a> is satisfied even though the existence condition has multiple solutions. The internal indeterminate characteristics are thus not identifiable from the external characteristics.</p>
+<p>This vignette analyses a verison of the New Keynesian monetary model. The first section introduces the economic in more detail. The second section verifies that for the parameter values indicated in the associated paper, the uniqueness condition in <a href="https://doi.org/10.1023/A:1020517101123">Sims (2001)</a> is satisfied even though the existence condition has multiple solutions. The internal indeterminate characteristics are thus not identifiable from the external characteristics. The last section explains the structure of the package.</p>
 <div id="description-of-the-new-keynesian-monetary-model" class="section level2">
 <h2>Description of the New Keynesian Monetary Model</h2>
-<p>The model we consider corresponds to the monetary rule described in Lubik and Marzo’s equation (26) with <span class="math inline">\(i = 0\)</span>:</p>
+<p>We consider the model</p>
 <p><span class="math display">\[
-\begin{align*}
+\begin{array}{rl}
     \mathbb{E}_{t} \left( y_{t+1} \right) + \sigma \pi_{t} &amp; = y_{t} + \sigma R_{t} \\
     \beta \mathbb{E}_{t} \left( \pi_{t+1} \right) &amp; = \pi_{t} - \kappa y_{t}\\
-    R_{t} &amp; = \phi_{R} R_{t-1} + \phi_{\pi} \pi_{t} + \phi_{y} y_{t} + \varepsilon_t^R
-\end{align*}
+    R_{t} &amp; = \phi_{R} R_{t-1} + \phi_{\pi} \pi_{t} + \phi_{y} y_{t} + \varepsilon_{t}^{R}
+\end{array}
 \]</span></p>
+<p>where <span class="math inline">\(y_t\)</span>, <span class="math inline">\(\pi_t\)</span>, and <span class="math inline">\(R_t\)</span> are log-deviations from the steady state of output, inflation and the interest rate. Furthermore, <span class="math inline">\(\sigma\)</span> denotes the intertemporal substitution elasticity, <span class="math inline">\(\beta\)</span> the time preference rate, <span class="math inline">\(\kappa^{-1}\)</span> measures the elasticity of aggregate supply with respect to inflation, <span class="math inline">\(\phi_R\)</span> denotes the interest rate smoothing coefficient, <span class="math inline">\(\phi_{\pi}\)</span> denotes the elasticity of the interest rate response with respect to inflation, and <span class="math inline">\(\phi_{y}\)</span> denotes the elasticity of the interest rate response with respect to output. Finally, <span class="math inline">\(\varepsilon_t^{R}\)</span> denotes an unanticipated policy implementation shock.</p>
+<p>The second equation is identical to equation (2) in <a href="https://doi.org/10.1016/S0165-1889(02)00153-7">Lubik and Schorfheide (2003)</a>. It describes the inflation dynamics due to firms’ optimal price-setting. The first equation corresponds to an intertemporal Euler equation. Compared with equation (1) in <a href="https://doi.org/10.1016/S0165-1889(02)00153-7">Lubik and Schorfheide (2003)</a>, i.e.</p>
+<p><span class="math display">\[
+\mathbb{E}_{t} \left( y_{t+1} \right) + \sigma \mathbb{E}_{t} \left( \pi_{t} \right) = y_{t} + \sigma R_{t},
+\]</span> we replace <span class="math inline">\(\mathbb{E}_{t} \left( \pi_{t} \right)\)</span> with <span class="math inline">\(\pi_t\)</span>. The third equation corresponds to equation (26) for <span class="math inline">\(i = 0\)</span> in <a href="https://doi.org/10.1016/j.iref.2004.09.008">Lubik and Marzo (2007)</a> and includes an additional shock <span class="math inline">\(\varepsilon_t^{R}\)</span>.</p>
+<div id="solving-the-model-by-replacing-the-conditional-expectations" class="section level3">
+<h3>Solving the model by replacing the conditional expectations</h3>
 <p>Replacing the conditional expectations with new variables <span class="math inline">\(\mathbb{E}_{t} \left( y_{t+1} \right) = \xi^{y}_t\)</span> and <span class="math inline">\(\mathbb{E}_{t} \left( \pi_{t+1} \right) = \xi^{\pi}_t\)</span>, adding equations</p>
 <p><span class="math display">\[
-\begin{align*}
+\begin{array}{rl}
   y_{t} &amp; = \xi^{y}_{t-1} + \eta^{y}_t\\
   \pi_{t} &amp; = \xi^{\pi}_{t-1} + \eta^{\pi}_t
-\end{align*}
+\end{array}
 \]</span></p>
 <p>and replacing <span class="math inline">\(y_t\)</span> and <span class="math inline">\(\pi_t\)</span> in the three equation New Keynesian monetary model, leads to the following system in the canoncial form of <a href="https://doi.org/10.1023/A:1020517101123">Sims (2001)</a></p>
 <p><span class="math display">\[
@@ -138,20 +149,10 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 \end{pmatrix}
 \]</span> where the matrices correspond to <span class="math display">\[ \left( \Gamma_0, \Gamma_1, \Psi, \Pi \right) \]</span> in Sims’ notation.</p>
 </div>
-<div id="the-structure-of-the-package" class="section level2">
-<h2>The Structure of the Package</h2>
-<p>The main function is <code>evaluate_my_model()</code>. Its inputs are</p>
-<ul>
-<li>deep structural parameters, given as a list, and</li>
-<li>a model, given as a string.</li>
-</ul>
-<p>First, it calls the function <code>linear_parameters_LM_26_0()</code> which uses the deep structural parameters to generate the matrices in Sims’ canonical form. Subsequently, some parts of Sims’ gensys program are called to obtain the ordered QZ decomposition. Last, the the existence and uniqueness condition are evaluated.</p>
-<p>All functions are well documented and can be found with the command <code>help(package = &quot;indeterminateR&quot;)</code>. In particular, a description of the parameter of the model described above can be found in the help file of <code>?linear_parameters_LM_26_0</code>.</p>
-<p>The outputs of <code>evaluate_my_model()</code> are functions of the matrices in Sims’ canonical form and are described in the help file which can be accessed with the command <code>?evaluate_my_model</code>.</p>
 </div>
-<div id="verification-of-statements-in-the-paper" class="section level2">
-<h2>Verification of Statements in the Paper</h2>
-<p>Here, we verify that, as stated in the paper, for the parameters <span class="math inline">\(\kappa = \frac{1}{\sigma}\)</span> and <span class="math inline">\(\phi_{y} = -\phi_{\pi} \kappa\)</span> and, e.g., <span class="math inline">\(\beta = 0.95\)</span> and <span class="math inline">\(\phi_R = 0.6\)</span>, the existence condition has a non-trivial kernel but the uniqueness condition is satisfied. According to <a href="https://doi.org/10.1016/S0165-1889(02)00153-7">Lubik and Schorfheide (2003)</a>, this would correspond to an (internally) indeterminate equilibrium.</p>
+<div id="verification-of-the-statements-in-the-paper" class="section level2">
+<h2>Verification of the Statements in the Paper</h2>
+<p>Here, we verify that, as stated in the associated paper, for the parameters <span class="math inline">\(\kappa = \frac{1}{\sigma}\)</span> and <span class="math inline">\(\phi_{y} = -\phi_{\pi} \kappa\)</span> and, e.g., <span class="math inline">\(\beta = 0.95\)</span> and <span class="math inline">\(\phi_R = 0.6\)</span>, the existence condition has a non-trivial kernel but the uniqueness condition is satisfied. According to <a href="https://doi.org/10.1016/S0165-1889(02)00153-7">Lubik and Schorfheide (2003)</a>, this would correspond to an (internally) indeterminate equilibrium.</p>
 <p>The functions prints <code>evaluate_my_model</code> prints</p>
 <ul>
 <li>the linear parameters <span class="math display">\[ \left( \Gamma_0, \Gamma_1, \Psi, \Pi \right) \]</span> in Sims’ canonical form,</li>
@@ -220,15 +221,50 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 ## [2,] -1.4049838  2.1074757</code></pre>
 <p>Finally, the results for existence and uniqueness are given. The boolean values for the existence and uniqueness condition indicate that both are satisfied. Even though the dimension of the kernel in the existence condition is one, the dimension of indeterminacy is zero.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">t</span>(results)</code></pre></div>
-<pre><code>##                                   [,1]
-## existence_boolean         1.000000e+00
-## existence_dim_kernel      1.000000e+00
-## uniqueness_boolean        1.000000e+00
-## indeterminacy_dim         0.000000e+00
-## indeterminacy_smallest_sv 8.326673e-16</code></pre>
+<table>
+<tbody>
+<tr class="odd">
+<td align="left">existence_boolean</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">existence_dim_kernel</td>
+<td align="right">1</td>
+</tr>
+<tr class="odd">
+<td align="left">uniqueness_boolean</td>
+<td align="right">1</td>
+</tr>
+<tr class="even">
+<td align="left">indeterminacy_dim</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">indeterminacy_smallest_sv</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
 <p>The boolean values for existence and uniqueness indicate that a solution exist and that it is unique. The dimension of the kernel of the existence condition is one. Therefore, Lubik and Schorfheide would characterize this system as indeterminate. The dimension of indeterminacy, however, is zero. The last entry corresponds to the smallest singular value of the intersection of the spaces spanned by <span class="math inline">\(\tilde{V}_{1 \bullet}\)</span> and <span class="math inline">\(V_{2 \bullet}\)</span>, i.e. the smallest singular value of <span class="math display">\[
 \tilde{V}'_{\bullet1}V_{\bullet2}
 \]</span> as described in the paper.</p>
+</div>
+<div id="the-structure-of-the-package" class="section level2">
+<h2>The Structure of the Package</h2>
+<p>The main function is <code>evaluate_my_model()</code>. Its inputs are</p>
+<ul>
+<li>deep structural parameters, given as a list, and</li>
+<li>a model, given as a string.</li>
+</ul>
+<p>First, it calls the function <code>linear_parameters_LM_26_0()</code> which uses the deep structural parameters to generate the matrices in Sims’ canonical form. Subsequently, some parts of Sims’ gensys programme are called to obtain the ordered QZ decomposition. Last, the the existence and uniqueness condition are evaluated.</p>
+<p>All functions are well documented and can be found with the command <code>help(package = &quot;indeterminateR&quot;)</code>. In particular, a description of the parameter of the model described above can be found in the help file of <code>linear_parameters_LM_26_0()</code>. Moreover, the outputs of <code>evaluate_my_model()</code> are functions of the matrices in Sims’ canonical form and are described in the help file of <code>evaluate_my_model</code>.</p>
+<div id="help-files" class="section level3">
+<h3>Help files</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">?linear_parameters_LM_26_0</code></pre></div>
+<pre><code>## Using development documentation for linear_parameters_LM_26_0</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">?evaluate_my_model</code></pre></div>
+<pre><code>## Using development documentation for evaluate_my_model</code></pre>
+</div>
 </div>
 
 

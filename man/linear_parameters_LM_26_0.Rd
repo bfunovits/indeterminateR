@@ -2,7 +2,7 @@
 % Please edit documentation in R/canonical_forms.R
 \name{linear_parameters_LM_26_0}
 \alias{linear_parameters_LM_26_0}
-\title{Obtain linear parameters of model by Lubik and Marzo (2007), equation (26), i = 0}
+\title{Obtain linear parameters of model by Lubik and Marzo (2007)}
 \usage{
 linear_parameters_LM_26_0(s = 1, b = 0.99, k = 0.5, f_y = 0.8,
   f_p = 0.7, f_r = 1.2)
@@ -24,6 +24,6 @@ linear_parameters_LM_26_0(s = 1, b = 0.99, k = 0.5, f_y = 0.8,
 List object containing the parameter matrices \deqn{\Gamma_0, \Gamma_1, \Psi, \Pi}.
 }
 \description{
-This function returns a slightly modfied verison of the New Keynesian monetary model as described in  \href{https://doi.org/10.1016/j.iref.2004.09.008}{Lubik Marzo (2007)}, see the vignette for more detail.
+This function returns a verison of the New Keynesian monetary model with a monetary rule which is similar to the one in \href{https://doi.org/10.1016/j.iref.2004.09.008}{Lubik Marzo (2007)}, see the vignette for more detail.
 In particular, it takes the deep parameters as input and returns the matrices occurring in Sims' canonical form.
 }
