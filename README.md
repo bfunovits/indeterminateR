@@ -6,4 +6,4 @@ This R-package verifies the claims in the article "The Full Set of Solutions of 
 
 Run `devtools::install_github("bfunovits/indeterminateR", build_vignettes = TRUE)`.
 The package `devtools` needs to be installed in order that the above line of code work.
-By default, vignettes are not built when using `install_github()`, thus the argument `build_vignettes` must be set `TRUE`.
+By default, vignettes are not built when using `devtools::install_github()`, thus the argument `build_vignettes` must be set to `TRUE`.
