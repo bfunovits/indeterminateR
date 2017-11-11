@@ -2,12 +2,11 @@
 title: "Unique External Characteristics with Non-Unique Internal Characteristics"
 author: "Bernd Funovits"
 date: '`18 June 2017`'
-output:
-  pdf_document: default
-  rmarkdown::html_vignette:
-    toc: yes
-vignette: |
-  %\VignetteIndexEntry{Uniqueness et al.} %\VignetteEngine{knitr::rmarkdown} %\VignetteEncoding{UTF-8}
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Example}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
